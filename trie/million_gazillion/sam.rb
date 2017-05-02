@@ -39,6 +39,7 @@ class Trie
 
   def include?(word_string)
     debugger
+    # (a && b ) : if both the operands are non zero, then the codition becomes true
     if find(word_string) && find(word_string).key?(:end)
       true
     else
@@ -52,7 +53,7 @@ class Trie
       current_node = current_node[char]
       return false if current_node.nil?
     end
-    subtree
+    current_node
     # true
   end
 end
