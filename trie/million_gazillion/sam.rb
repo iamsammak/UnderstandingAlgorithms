@@ -52,8 +52,8 @@ class Trie
       current_node = current_node[char]
       return false if current_node.nil?
     end
-    # subtree
-    true
+    subtree
+    # true
   end
 end
 
