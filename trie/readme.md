@@ -10,7 +10,7 @@ How does it differ from a binary search tree?
 
 To visualize the difference, let’s consider a small dictionary made of five words. Assume that the Greek letters indicate pointers, and note that in the trie, red characters indicate nodes holding valid words.
 
-![trie-visualization](.trie-structure-from-toptal.png)
+![trie-visualization](./trie-structure-from-toptal.png)
 
 ### Implementation
 
