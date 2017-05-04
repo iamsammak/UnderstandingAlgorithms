@@ -4,6 +4,8 @@
 
 First off, a trie is a tree. Pronounced 'try' like in it being an efficient information re *trie* val data structure.
 
+It is a kind of search tree; an ordered tree data structure where the keys are usually strings.
+
 How does it differ from a binary search tree?
 
   Unlike a binary search tree, no node in the tree stores the key associate with that node; instead, its position in the tree defines they key with which it is associated.
