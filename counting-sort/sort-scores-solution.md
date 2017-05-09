@@ -40,3 +40,10 @@ Here's another way to think about it: in each iteration of our two nested loops,
 
 #### Takeaways
 Counting is a common pattern in time-saving algorithms. It can often get you O(n) runtime, but at the expense of adding O(n) space. In an interview, being able to talk through these trade-offs and considerations will earn you brownie points with the interviewer.
+
+
+#### Bonus
+
+Attempt at using an [in-place algorithm][in-place]
+
+[in-place]: ./in-place.md
