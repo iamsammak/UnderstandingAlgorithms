@@ -1,5 +1,6 @@
 require 'csv'
 require 'sqlite3'
+require 'byebug'
 
 # Reading the CSV file
 companies = CSV.read("./TechCrunchcontinentalUSA.csv")
