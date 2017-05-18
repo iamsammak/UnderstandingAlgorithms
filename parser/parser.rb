@@ -18,10 +18,13 @@ end
 
 duplicate_names = web_company_names.select { |k, v| v > 1 }
 
+# create MONTHS to use later
+MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+
 # iterate over the duplicates to...
-duplicate_names.each do |dup_name|
+duplicate_names.keys.each do |dup_name|
   # create a subset of all the actual rows that match current dup_names
-  current_group = web_companies.select { |row| row[0] == k }
+  current_group = web_companies.select { |row| row[0] == dup_name }
 
   # filter by date first, year then month then day then funding amount
   # year date "1-Feb-08"
@@ -31,71 +34,87 @@ duplicate_names.each do |dup_name|
   # - 17 to reset numbers making 2017 the biggest
   max_year = years.max_by { |year| (year.to_i - 17) % 100 }
   # with max year found, delete the rest
-  unwanted_rows = current_group.select { row| row[6][-2..-1] != max_year }
+  unwanted_years = current_group.select { |row| row[6][-2..-1] != max_year }
   target_group = current_group.reject { |row| row[6][-2..-1] != max_year }
   # delete all unwanted rows from web_companies
-  unwanted_rows.each { |row| web_companies.delete(row) }
+  unwanted_years.each { |row| web_companies.delete(row) }
 
-  # rinse and repeat for month if focus group isn't one row
+  # rinse and repeat compare by month, if there are duplicates with max year
   if target_group.length > 1
+    months = target_group.map { |row| MONTHS.index(row[6][-6..-4]) }
+    max_month = MONTHS[months.max]
+    unwanted_months = target_group.select { |row| row[6][-6..-4] != max_month }
+    target_group = target_group.reject { |row| row[6][-6..-4] != max_month }
+    unwanted_months.each { |row| web_companies.delete(row) }
+  end
 
+  # rinse and repeat, compare by day
+  if target_group.length > 1
+    days = target_group.map { |row| row[6][0..-8] }
+    max_day = days.max
+    unwanted_days = target_group.select { |row| row[6][0..-8] != max_day}
+    target_group = target_group.reject { |row| row[6][0..-8] != max_day}
+    unwanted_days.each { |row| web_companies.delete(row) }
+  end
 
+  # rinse and repeat, compare by funding amount
+  if target_group.length > 1
+    amounts = target_group.map { |row| row[7] }
+    max_amount = amounts.max
+    unwanted_amounts = target_group.select { |row| row[7] != max_amount }
+    target_group = target_group.reject { |row| row[7] != max_amount }
+    unwanted_amounts.each { |row| web_companies.delete(row) }
+  end
 
+  # if there are still dups, then just chose one
+  if target_group.length > 1
+    unwanted_dups = target_group.drop(1) # the dropped one will be the chosen one
+    unwanted_dups.each { |row| web_companies.delete(row) }
+  end
 end
 
-# set aside the rows inside companies that are duplicates
+# Helper to print out remaining duplicates
 
-
-
-# web_company_names = Hash.new(0)
-# companies.each do |row|
-#   if row[3] == "web"
-#     web_company_names[row[0]] += 1
-#   end
-# end
-#
-# dup_companies = web_company_names.select{|k,v| v > 1}
-#
-# dup_names = []
-#
-# dup_companies.each do |company_name, v|
-#   dup_names << company_name
-# end
-#
-# companies.each do |row|
-#   current_company = row[0]
-#   temp_date = ""
-#   temp_amt = nil
-#   if dup_names.include?(row[0])
-#     #do comparison logic
-#
-#     temp_date = row[6]
-#     temp_amt = row[7]
-#     # parse funding date and funding amount
-#     # keep funding date and amount
-#     #
-#   end
-# end
-
-
-begin
-
-  db = SQLite3::Database.open "companies.db"
-  db.execute "DROP TABLE IF EXISTS Companies"
-  db.execute "CREATE TABLE IF NOT EXISTS Companies(Id INTEGER PRIMARY KEY,
-      Permalink TEXT, Company TEXT, NumEmps INT, Catergory TEXT, City TEXT, State TEXT, FundedDate TEXT,
-      RaisedAmt INT, RaisedCurrency TEXT, Round TEXT)"
-
-  # YOUR CODE GOES HERE
-
-rescue SQLite3::Exception => e
-
-  puts "Exception occurred"
-  puts e
-
-ensure
-  db.close if db
+web_companies.each_with_index do |el, i|
+  next if i == web_companies.length - 1
+  if web_companies[i + 1][0] == el[0]
+    p el
+    p web_companies[i + 1]
+  end
 end
+
+# Helper to verify number and check names
+#
+p web_companies.map { |el| el[0] }.count
+
+names = web_companies.map { |row| row[0] }.uniq
+sorted_names = names.sort_by {|name| name[0]}
+count = 0
+sorted_names.each do |name|
+  p "#{count}: #{name}"
+  count += 1
+end
+
+p web_companies.map { |el| el[0] }.uniq.count
+
+# begin
+#
+#   db = SQLite3::Database.open "companies.db"
+#   db.execute "DROP TABLE IF EXISTS Companies"
+#   db.execute "CREATE TABLE IF NOT EXISTS Companies(Id INTEGER PRIMARY KEY,
+#       Permalink TEXT, Company TEXT, NumEmps INT, Catergory TEXT, City TEXT, State TEXT, FundedDate TEXT,
+#       RaisedAmt INT, RaisedCurrency TEXT, Round TEXT)"
+#
+#   # YOUR CODE GOES HERE
+#
+# rescue SQLite3::Exception => e
+#
+#   puts "Exception occurred"
+#   puts e
+#
+# ensure
+#   db.close if db
+# end
 
 
 # BONUS: YOUR CODE GOES HERE
