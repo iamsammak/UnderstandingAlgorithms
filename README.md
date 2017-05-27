@@ -6,4 +6,4 @@ Just my attempts to understand various algorithms and how to use them
 [Time Complexity][tc]
 
 <!-- Links -->
-[tc]:https://github/com/iamsammak/UnderstandingAlgorithms/time_complexity
+[tc]:https://github.com/iamsammak/UnderstandingAlgorithms/tree/master/time_complexity
