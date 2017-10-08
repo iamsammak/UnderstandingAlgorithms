@@ -1,16 +1,3 @@
-require 'pry'
-require 'byebug'
-
-# When you invoke super with arguments, Ruby sends a message to the
-# parent of the current object, asking it to invoke a method of the same name
-# as the method invoking super.
-# super sends exactly those arguments.
-
-# root node
-# add/insert : which checks and adds word if not present
-# include?
-# find
-
 class Trie
   def initialize
     @root_node = {}
@@ -59,11 +46,34 @@ class Trie
 
 end
 
-# unless statement review
-    # unless conditional [then]
-    #   code
-    # [else
-    #   code]
-    # end
-# executes code if conditional is false
-# if the conditional is true, code specified in the else clause is executed
+def count_words(node, count = 0)
+  if node == {}
+    count += 1
+    return count
+  end
+
+  keys = node.keys
+  keys.each do |char|
+    child_node = node[char]
+    count = count_words(child_node, count)
+  end
+  return count
+end
+
+# #!/bin/ruby
+#
+# sam = Trie.new
+#
+# n = gets.strip.to_i
+# for a0 in (0..n-1)
+#     op,contact = gets.strip.split(' ')
+#
+#     temp_node = sam.send(op, contact)
+#     if (op === "find")
+#         puts 0 if !temp_node
+#         if (temp_node.is_a?(Hash))
+#             count = count_words(temp_node)
+#             puts count
+#         end
+#     end
+# end
