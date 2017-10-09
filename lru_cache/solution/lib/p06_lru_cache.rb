@@ -10,48 +10,43 @@ class LRUCache
   end
 
   def count
-    @map.count
+    map.count
   end
 
   def get(key)
-    if @map[key]
-      link = @map[key]
-      update_link!(link)
-      link.val
+    if map[key]
+      node = map[key]
+      update_node!(node)
+      node.val
     else
       calc!(key)
     end
   end
 
   def to_s
-    "Map: " + @map.to_s + "\n" + "Store: " + @store.to_s
+    'Map: ' + map.to_s + '\n' + 'Store: ' + store.to_s
   end
 
   private
+  attr_reader :store, :map
 
   def calc!(key)
     val = @prc.call(key)
-    new_link = @store.insert(key, val)
-    @map[key] = new_link
+    new_node = store.append(key, val)
+    map[key] = new_node
 
     eject! if count > @max
     val
   end
 
-  def update_link!(link)
-    link.prev.next = link.next
-    link.next.prev = link.prev
-
-    link.prev = @store.last
-    link.next = @store.last.next
-    @store.last.next = link
+  def update_node!(node)
+    node.remove
+    map[node.key] = store.append(node.key, node.val)
   end
 
   def eject!
-    rm_link = @store.first
-    rm_link.prev.next = rm_link.next
-    rm_link.next.prev = rm_link.prev
-    @map.delete(rm_link.key)
+    rm_node = store.first
+    rm_node.remove
+    map.delete(rm_node.key)
     nil
   end
-end

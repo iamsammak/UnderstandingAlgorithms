@@ -59,12 +59,17 @@ describe HashMap do
     it "deletes keys" do
       expect(hash[:first]).to eq(1)
       hash.delete(:first)
-      expect(hash.get(:first)).to be_nil
+      expect(hash[:first]).to be_nil
     end
   end
 
   describe "#count" do
     it "keeps count through insertions" do
+      expect(hash.count).to eq(3)
+    end
+
+    it "does not change count when updating existing key" do
+      hash[:first] = 1
       expect(hash.count).to eq(3)
     end
 
@@ -76,12 +81,12 @@ describe HashMap do
 
   describe "#each" do
     it "enumerates over all the items and yields key-value pairs" do
-      i = 0
-      vals = (1..3).to_a
+      goal = [[:first, 1], [:second, 2], [:third, 3]]
+      result = []
       hash.each do |k, v|
-        expect(v).to eq(vals[i])
-        i += 1
+        result << [k, v]
       end
+      expect(result.sort).to eq(goal)
     end
 
     it "includes Enumerable module" do
@@ -101,7 +106,10 @@ describe HashMap do
 
     it "should increase the size of the store" do
       old_store_length = hash.instance_variable_get(:@store).length
-      hash.send(:resize!)
+
+      # triggers resize
+      7.times { |i| hash[i] = i + 1 }
+
       new_store_length = hash.instance_variable_get(:@store).length
 
       expect(new_store_length).to be > old_store_length
@@ -112,7 +120,8 @@ describe HashMap do
         [k, hash[k]]
       end
 
-      hash.send(:resize!)
+      # triggers resize
+      7.times { |i| hash[i] = i + 1 }
 
       contents.each do |k, v|
         expect(hash[k]).to eq(v)
