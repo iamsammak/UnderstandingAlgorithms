@@ -6,12 +6,46 @@ describe LinkedList do
     { first: 1, second: 2, third: 3 }
   end
 
+  let(:empty_list) { LinkedList.new }
+
   let(:list) do
     list = LinkedList.new
     k_v_pairs.each do |key, val|
-      list.insert(key, val)
+      list.append(key, val)
     end
     list
+  end
+
+  describe "#empty" do
+    it "checks whether any nodes have been inserted" do
+      expect(empty_list.empty?).to be true
+      expect(list.empty?).to be false
+    end
+  end
+
+  describe "#append" do
+    it "appends nodes" do
+      empty_list.append(:first, 1)
+      expect(empty_list.empty?).to be false
+    end
+
+    it "appends nodes in order" do
+      expect(list.first.key).to be(:first)
+      expect(list.last.key).to be(:third)
+    end
+  end
+
+  describe "#update" do
+    it "updates nodes" do
+      empty_list.append(:first, 1)
+      empty_list.update(:first, 2)
+      expect(empty_list.first.val).to be 2
+    end
+
+    it "doesn't add new nodes" do
+      empty_list.update(:first, 2)
+      expect(empty_list.empty?).to be true
+    end
   end
 
   describe "#get" do
@@ -22,15 +56,22 @@ describe LinkedList do
     end
 
     it "returns nil for absent keys" do
-      expect(list.get(1)).to be_nil
+      expect(list.get(:absent_key)).to be_nil
     end
   end
 
   describe "#remove" do
-    it "removes a link by key" do
+    it "removes a node by key" do
       expect(list.get(:first)).to eq(1)
       list.remove(:first)
       expect(list.get(:first)).to be_nil
+    end
+
+    it "reassigns pointers when nodes are removed" do
+      list.remove(:second)
+
+      expect(list.first.next.key).to be(:third)
+      expect(list.last.prev.key).to be(:first)
     end
   end
 
@@ -45,14 +86,22 @@ describe LinkedList do
   end
 
   describe "#each" do
-    it "enumerates over the links and yields each successive link" do
+    it "enumerates over the nodes and yields each successive node" do
       list_vals_ordered = k_v_pairs.values
       list_vals_yielded = []
-      list.each do |link|
-        list_vals_yielded << link.val
+      list.each do |node|
+        list_vals_yielded << node.val
       end
       expect(list_vals_yielded).to eq(list_vals_ordered)
     end
+
+  describe "#[]" do
+    it "can look up nodes by index" do
+      expect(list[0].key).to eq(:first)
+      expect(list[1].key).to eq(:second)
+      expect(list[2].key).to eq(:third)
+    end
+  end
 
     it "includes Enumerable module" do
       expect(list.class.ancestors).to include(Enumerable)
