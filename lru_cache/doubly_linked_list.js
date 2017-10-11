@@ -18,7 +18,7 @@ class Node {
 
     return this;
   }
-};
+}
 
 class DoublyLinkedList {
 
@@ -161,4 +161,4 @@ class DoublyLinkedList {
 
     return null;
   }
-};
+}
